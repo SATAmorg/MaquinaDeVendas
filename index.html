@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máquina de Vendas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #vending-machine {
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            width: 600px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #balance {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="vending-machine">
+    <h2>Máquina de Vendas</h2>
+    <button onclick="displayItems()">Exibir Itens</button>
+    <br>
+    <button onclick="insertMoney(0.25)">Inserir $0.25</button>
+    <button onclick="insertMoney(0.5)">Inserir $0.50</button>
+    <button onclick="insertMoney(1)">Inserir $1.00</button>
+    <br>
+    <button onclick="selectItem('Coca-Cola')">Coca-Cola - $6.25 (Quantidade: <span id="coca-cola-quantity">5</span>)</button>
+    <button onclick="addMoreItems('Coca-Cola')">Adicionar Mais Coca-Cola</button>
+    <button onclick="selectItem('Pepsi')">Pepsi - $5.75 (Quantidade: <span id="pepsi-quantity">5</span>)</button>
+    <button onclick="addMoreItems('Pepsi')">Adicionar Mais Pepsi</button>
+    <button onclick="selectItem('Sprite')">Sprite - $6.00 (Quantidade: <span id="sprite-quantity">5</span>)</button>
+    <button onclick="addMoreItems('Sprite')">Adicionar Mais Sprite</button>
+    <div id="balance">Saldo: $0.00</div>
+    <div id="message"></div>
+</div>
+
+<script>
+    let balance = 0.0;
+
+    // Objeto para armazenar preços e quantidades dos itens
+    const items = {
+        "Coca-Cola": { price: 6.25, quantity: 5 },
+        "Pepsi": { price: 5.75, quantity: 5 },
+        "Sprite": { price: 6.00, quantity: 5 }
+    };
+
+    function displayItems() {
+        alert("Itens disponíveis:\nCoca-Cola - $6.25 (Quantidade: " + items["Coca-Cola"].quantity + ")\nPepsi - $5.75 (Quantidade: " + items["Pepsi"].quantity + ")\nSprite - $6.00 (Quantidade: " + items["Sprite"].quantity + ")");
+    }
+
+    function insertMoney(amount) {
+        balance += amount;
+        updateBalance();
+    }
+
+    function selectItem(itemName) {
+        if (items.hasOwnProperty(itemName)) {
+            const item = items[itemName];
+            const itemPrice = item.price;
+
+            if (balance >= itemPrice && item.quantity > 0) {
+                // Dispensar item
+                document.getElementById("message").innerText = "Dispensando " + itemName;
+                // Atualizar quantidade
+                item.quantity--;
+                updateItemQuantity(itemName);
+                // Calcular e exibir troco
+                const change = balance - itemPrice;
+                if (change > 0) {
+                    alert("Troco: $" + change.toFixed(2));
+                }
+                // Resetar saldo
+                balance = 0.0;
+                updateBalance();
+            } else if (item.quantity === 0) {
+                document.getElementById("message").innerText = "Sem estoque para " + itemName;
+            } else {
+                document.getElementById("message").innerText = "Saldo insuficiente. Por favor, insira mais dinheiro.";
+            }
+        } else {
+            document.getElementById("message").innerText = "Seleção de item inválida. Por favor, escolha um item válido.";
+        }
+    }
+
+    function addMoreItems(itemName) {
+        // Adicionar 1 unidade ao estoque
+        items[itemName].quantity++;
+        updateItemQuantity(itemName);
+    }
+
+    function updateBalance() {
+        document.getElementById("balance").innerText = "Saldo: $" + balance.toFixed(2);
+    }
+
+    function updateItemQuantity(itemName) {
+        document.getElementById(itemName.toLowerCase().replace(" ", "-") + "-quantity").innerText = items[itemName].quantity;
+    }
+</script>
+
+</body>
+</html>
